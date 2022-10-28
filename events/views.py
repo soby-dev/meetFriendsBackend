@@ -147,17 +147,6 @@ def GetEvent(request):
     
     eventList = []
 
-    # if interaction:
-    #     user = User.objects.get(username=username)
-    #     event = EventsInteractedWith(user, interaction)
-    #     data = SerializeEvents(event, user)
-    #     print(f"interaction: {data}")
-
-    #     if len(data) > 0:
-    #         return Response(data)
-    #     else:
-    #         return Response([])
-
     
     if code:
         event = EventCodeSearch(code)
@@ -232,100 +221,6 @@ def GetEvent(request):
 
 
 
-# # Like or unlike an event
-# @api_view(['POST'])
-# @permission_classes([IsAuthenticated])
-# def LikeEvent(request, eventcode):
-#     user = request.user
-
-#     event = Event.objects.get(code=eventcode)
-
-#     # check if user has liked the tweet before so next click unlikes it
-#     hasLiked = EventLike.objects.filter(event=event, likedBy=user)
-#     if hasLiked:
-#         data = {"likes": event.likes - 1}
-#         EventLike.objects.get(likedBy=user, event=event).delete()
-#         liked = False
-#     else:
-#         data = {"likes": event.likes + 1}
-#         EventLike.objects.create(likedBy=user, event=event)
-#         text = f"{user} liked your event '{event.name}'"
-#         Notification.objects.create(owner=event.creator, sender=user, type='likeEvent', object_reference=event.code, text=text)
-#         liked = True
-
-#     serializer = EventSerializer(instance=event, data=data, partial=True)
-
-#     if serializer.is_valid():
-#         serializer.save()
-
-#     serializer_response = {'likes': serializer.data['likes'], 'liked':liked}
-    
-    
-#     return Response(serializer_response )
-
-    
-
-# # class to update event
-# class UpdateEvent(generics.UpdateAPIView, EventOwnerPermission):
-#     permission_classes = [EventOwnerPermission]
-#     parser_classes = [FormParser, MultiPartParser]
-#     queryset = Event.objects.all()
-#     serializer_class = EventUpdateSerializer
-
-#     # This is the model field that would be queried from the queryset
-#     lookup_field = 'code'
-
-#     # This is the url argument that would be passed as the value of the lookupfield. this field is defined in urls as a urlparameter
-#     lookup_url_kwarg = 'eventcode'
-
-
-
-# # class to add event category
-# class CreateCategory(APIView, EventOwnerPermission):
-#     permission_classes = [EventOwnerPermission]
-#     parser_classes = [FormParser, MultiPartParser]
-
-#     def put(self, request, format=None, *args, **kwargs):
-#         eventcode = request.data.get('eventcode')
-#         category = request.data.get('category')
-
-#         event = Event.objects.get(code=eventcode)
-        
-#         EventCategory.objects.update_or_create(event=event, category=category, defaults={'category': category})
-#         return Response('category has been added')
-
-
-# # class to delete event category
-# class DeleteCategory(APIView, EventOwnerPermission):
-#     permission_classes = [EventOwnerPermission]
-#     parser_classes = [FormParser, MultiPartParser]
-
-#     def delete(self, request, format=None, *args, **kwargs):
-#         eventcode = request.data.get('eventcode')
-#         category = request.data.get('category')
-
-#         event = Event.objects.get(code=eventcode)
-        
-#         EventCategory.objects.get(event=event, category=category).delete()
-
-#         return Response('category has been deleted')
-
-
-
-# # delete event. note, class based views were used as function based views dont support object owner permissions
-# class DeleteEvent(generics.DestroyAPIView, EventOwnerPermission):
-#     permission_classes = [EventOwnerPermission]
-#     parser_classes = [FormParser, MultiPartParser]
-#     queryset = Event.objects.all()
-#     serializer_class = EventSerializer
-
-#     # This is the model field that would be queried from the queryset
-#     lookup_field = 'code'
-
-#     # This is the url argument that would be passed as the value of the lookupfield. this field is defined in urls as a urlparameter
-#     lookup_url_kwarg = 'eventcode'
-
-
 # join an event
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -357,21 +252,3 @@ def JoinEvent(request, eventcode):
     
     return Response(serializer_response)
 
-
-
-# # Get events a user has joined.
-# class GetEventsJoined(APIView, IsAuthenticated):
-#     permission_classes = [IsAuthenticated]
-#     parser_classes = [FormParser, MultiPartParser]
-
-
-#     def get(self, request, format=None):
-#         """
-#         Return a list of all events user has joined.
-#         """
-#         user = request.user
-#         participating = EventParticipant.objects.filter(user=user).values_list('event', flat=True)
-#         events = Event.objects.filter(id__in = participating).order_by('date')
-#         serializer = EventSerializer(events, many=True)
-
-#         return Response(serializer.data)
