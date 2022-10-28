@@ -30,7 +30,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['meetfriendsbackend.herokuapp.com' ,'127.0.0.1', 'localhost', 'meetupfriends.herokuapp.com', 'www.meetupfriends.herokuapp.com']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
